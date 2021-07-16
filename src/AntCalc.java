@@ -2,9 +2,9 @@
 import java.util.ArrayList;
 
 public class AntCalc extends Thread {
+
     private ArrayList<Ant> ants;
     private double[][] pheromones;
-    private static final int SPEED = 1;
 
     public AntCalc(ArrayList<Ant> antsIn, double[][] pheromonesIn) {
         ants = antsIn;
@@ -15,9 +15,9 @@ public class AntCalc extends Thread {
         while(true) {
             nextFrame();
             try {
-                Thread.sleep(10);
+                Thread.sleep(Properties.ANT_STEP_DELAY);
             } catch(InterruptedException e) {
-
+                System.err.println("Sleep Error");
             }
         }
     }
@@ -29,86 +29,77 @@ public class AntCalc extends Thread {
             double y = ant.getY();
             double angle = ant.getAngle();
 
-            double xAdj = x - Properties.DIAMETER / 2;
-            double yAdj = Properties.DIAMETER / 2 - y;
+            double xAdj = x - Properties.WIDTH / 2;
+            double yAdj = Properties.HEIGHT / 2 - y;
 
-            if(Properties.CIRCLE) {
-                double radius = Properties.DIAMETER / 2 - 10;
+            int decWidth = Properties.WIDTH - Properties.BORDER;
+            int decHeight = Properties.HEIGHT - Properties.BORDER;
 
-                if (xAdj * xAdj + yAdj * yAdj > radius * radius) {
-                    if (xAdj > radius)
-                        xAdj = radius;
-                    else if (xAdj < -radius)
-                        xAdj = -radius;
-                    if (yAdj > radius)
-                        yAdj = radius;
-                    else if (yAdj < -radius)
-                        yAdj = -radius;
-                    angle = Math.asin(yAdj/radius);
-                    if (xAdj < 0 && yAdj > 0 || xAdj < 0 && yAdj < 0)
-                        angle = Math.PI - angle;
-                    angle += Math.PI;
+            if(Properties.OVAL) {
+                if ((xAdj/(decWidth/2))*(xAdj/(decWidth/2)) + (yAdj/(decHeight/2))*(yAdj/(decHeight/2)) > 1) {
+                    angle = getAngle(xAdj, yAdj);
                 }
             }
             else {
-                double radius = Math.pow(xAdj*xAdj + yAdj*yAdj, 0.5);
-
-                if(x < 10 || x > Properties.WIDTH - 10 || y < 10 || y > Properties.HEIGHT - 10) {
-                    angle = Math.asin(yAdj/radius);
-                    if (xAdj < 0 && yAdj > 0 || xAdj < 0 && yAdj < 0)
-                        angle = Math.PI - angle;
-                    angle += Math.PI;
+                if(x < Properties.BORDER || x > decWidth || y < Properties.BORDER || y > decHeight) {
+                    angle = getAngle(xAdj, yAdj);
                 }
-
-                /*
-                if(x < 10 || x > Main.WIDTH - 10) {
-                    angle = Math.PI - angle;
-                }
-                else if(y < 10 || y > Main.HEIGHT - 10) {
-                    angle = -angle;
-                }
-                */
             }
 
+            x += Properties.SPEED * Math.cos(angle);
+            y -= Properties.SPEED * Math.sin(angle);
+            angle += Properties.WANDER*Math.random() - Properties.WANDER/2;
 
-            x += SPEED * Math.cos(angle);
-            y -= SPEED * Math.sin(angle);
-            angle += 0.1*Math.random() - 0.05;
-
-            double maxAngle = angle;
+            double maxAngle = 0;
             boolean foundPheromone = false;
 
-            try {
-                for (int r = Properties.VISION_DIST; r > Properties.VISION_DIST-Properties.VISION_DEPTH; r--) {
-                    double maxPheromone = 0;
-                    for (double theta = -Properties.VISION_ANGLE; theta < Properties.VISION_ANGLE; theta += Math.PI / 24) {
-                        double curPheromone = pheromones[(int) (x + r * Math.cos(angle + theta))][(int) (y - r * Math.sin(angle + theta))];
-                        if (curPheromone > maxPheromone) {
-                            maxAngle = angle + theta;
-                            maxPheromone = curPheromone;
-                            foundPheromone = true;
-                        }
-                    }
-                    if(foundPheromone)
-                        break;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
+            for (int r = Properties.VISION_DIST; r > Properties.VISION_DIST-Properties.VISION_DEPTH; r--) {
+                double maxPheromone = 0;
+                for (double theta = -Properties.VISION_ANGLE; theta < Properties.VISION_ANGLE; theta += Math.PI/24) {
+                    int xIndex = (int) (x + r * Math.cos(angle + theta));
+                    int yIndex = (int) (y - r * Math.sin(angle + theta));
 
+                    double curPheromone = 0;
+                    if (xIndex >= 0 && xIndex < Properties.WIDTH && yIndex >= 0 && yIndex < Properties.HEIGHT) {
+                        curPheromone = pheromones[xIndex][yIndex];
+                    } else {
+                        System.err.println("Vision Out Of Bounds Error");
+                    }
+
+                    if (curPheromone > maxPheromone) {
+                        maxAngle = theta;
+                        maxPheromone = curPheromone;
+                        foundPheromone = true;
+                    }
+                }
+                if (foundPheromone) {
+                    break;
+                }
             }
 
-            angle = maxAngle;
+            angle += maxAngle;
 
             ant.setX(x);
             ant.setY(y);
             ant.setAngle(angle);
 
-            try {
-                pheromones[(int)x][(int)y] += 0.1;
-                if(pheromones[(int)x][(int)y] > 1)
-                    pheromones[(int)x][(int)y] = 1;
-            } catch(ArrayIndexOutOfBoundsException e) {
-                System.out.println("Pheromones");
+            if(x >= 0 && x < Properties.WIDTH && y >= 0 && y < Properties.HEIGHT) {
+                pheromones[(int) x][(int) y] += Properties.PHEROMONE_STRENGTH;
+                if (pheromones[(int) x][(int) y] > 1)
+                    pheromones[(int) x][(int) y] = 1;
+            }
+            else {
+                System.err.println("Pheromone Out Of Bounds Error");
             }
         }
+    }
+
+    private double getAngle(double xAdj, double yAdj) {
+        double radius = Math.pow(xAdj*xAdj + yAdj*yAdj, 0.5);
+        double angle = Math.asin(yAdj/radius);
+        if (xAdj < 0 && yAdj > 0 || xAdj < 0 && yAdj < 0)
+            angle = Math.PI - angle;
+        angle += Math.PI;
+        return angle;
     }
 }

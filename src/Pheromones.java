@@ -12,15 +12,14 @@ public class Pheromones extends Thread {
             for (int i = 0; i < pheromones.length; i++) {
                 for (int j = 0; j < pheromones[i].length; j++) {
                     if (pheromones[i][j] > 0)
-                        pheromones[i][j] -= 0.001;
+                        pheromones[i][j] -= Properties.PHEROMONE_DISSIPATION;
                 }
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(Properties.PHEROMONES_DELAY);
             } catch(InterruptedException e) {
-
+                System.err.println("Sleep Error");
             }
         }
     }
-
 }

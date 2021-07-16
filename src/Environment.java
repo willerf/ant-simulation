@@ -20,20 +20,29 @@ public class Environment extends JPanel {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        for(int i = 0; i < pheromones.length; i++) {
-            for(int j = 0; j < pheromones[i].length; j++) {
-                if(pheromones[i][j] > 0) {
-                    g.setColor(new Color(0, 255, 255, (int)(250*pheromones[i][j])));
-                    drawPixel(g, i, j);
+        if(Properties.DRAW_PHEROMONES) {
+            for (int i = 0; i < pheromones.length; i++) {
+                for (int j = 0; j < pheromones[i].length; j++) {
+                    if (pheromones[i][j] > 0) {
+                        g.setColor(new Color(0, 255, 255, (int) (250 * pheromones[i][j])));
+                        drawPixel(g, i, j);
+                    }
                 }
             }
         }
 
-        g.setColor(Color.BLUE);
-        for(int i = 0; i < ants.size(); i++) {
-            Ant ant = ants.get(i);
-            drawAnt(g, (int)ant.getX(), (int)ant.getY(), ant.getAngle());
-            //drawVision(g, (int)ant.getX(), (int)ant.getY(), ant.getAngle());
+        if(Properties.DRAW_ANT || Properties.DRAW_VISION) {
+            g.setColor(Color.BLUE);
+            for (int i = 0; i < ants.size(); i++) {
+                Ant ant = ants.get(i);
+
+                if(Properties.DRAW_ANT) {
+                    drawAnt(g, (int) ant.getX(), (int) ant.getY(), ant.getAngle());
+                }
+                if(Properties.DRAW_VISION) {
+                    drawVision(g, (int) ant.getX(), (int) ant.getY(), ant.getAngle());
+                }
+            }
         }
     }
 
@@ -50,11 +59,9 @@ public class Environment extends JPanel {
     }
 
     public void drawVision(Graphics g, int x, int y, double angle) {
-        int visionDist = 20;
-        double visionAngle = Math.PI/4;
         drawAnt(g, x, y, angle);
-        for(int r = 0; r < visionDist; r++) {
-            for(double theta = -visionAngle; theta < visionAngle; theta+= Math.PI/24) {
+        for(int r = Properties.VISION_DIST; r > Properties.VISION_DIST-Properties.VISION_DEPTH; r--) {
+            for(double theta = -Properties.VISION_ANGLE; theta < Properties.VISION_ANGLE; theta+= Math.PI/24) {
                 drawPixel(g, (int)(x + r*Math.cos(angle + theta)), (int)(y - r*Math.sin(angle + theta)));
             }
         }

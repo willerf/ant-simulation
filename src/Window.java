@@ -11,5 +11,4 @@ public class Window extends JFrame {
         getRootPane().setBorder(BorderFactory.createMatteBorder(20, 20, 20, 20, Color.BLACK));
         setVisible(true);
     }
-
 }

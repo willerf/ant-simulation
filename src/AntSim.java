@@ -7,16 +7,11 @@ public class AntSim {
     private double[][] pheromones;
 
     public AntSim() {
-        if(Properties.CIRCLE) {
-            Properties.WIDTH = Properties.DIAMETER;
-            Properties.HEIGHT = Properties.DIAMETER;
-        }
-
         ants = new ArrayList<>();
         pheromones = new double[Properties.WIDTH][Properties.HEIGHT];
 
-        for(int i = 0; i < 100000; i++) {
-            ants.add(new Ant(Properties.WIDTH/8, Properties.HEIGHT/2, 2*Math.PI*Math.random()));
+        for(int i = 0; i < Properties.NUM_ANTS; i++) {
+            ants.add(new Ant(Properties.WIDTH/2, Properties.HEIGHT/2, 2*Math.PI*Math.random()));
         }
     }
 
@@ -30,12 +25,6 @@ public class AntSim {
         Environment environment = new Environment(ants, pheromones);
         window.add(environment);
 
-        try {
-            Thread.sleep(1000);
-        } catch(InterruptedException e) {
-
-        }
-
         AntCalc antCalc = new AntCalc(ants, pheromones);
         antCalc.start();
 
@@ -45,11 +34,10 @@ public class AntSim {
         while(true) {
             environment.repaint();
             try {
-                Thread.sleep(25);
+                Thread.sleep(Properties.GRAPHICS_DELAY);
             } catch(InterruptedException e) {
-
+                System.err.println("Sleep Error");
             }
         }
     }
-
 }

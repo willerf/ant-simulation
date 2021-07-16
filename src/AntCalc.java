@@ -32,16 +32,15 @@ public class AntCalc extends Thread {
             double xAdj = x - Properties.WIDTH / 2;
             double yAdj = Properties.HEIGHT / 2 - y;
 
-            int decWidth = Properties.WIDTH - Properties.BORDER;
-            int decHeight = Properties.HEIGHT - Properties.BORDER;
-
             if(Properties.OVAL) {
-                if ((xAdj/(decWidth/2))*(xAdj/(decWidth/2)) + (yAdj/(decHeight/2))*(yAdj/(decHeight/2)) > 1) {
+                if((xAdj/((Properties.WIDTH - 2*Properties.BORDER_WIDTH)/2))*(xAdj/((Properties.WIDTH - 2*Properties.BORDER_WIDTH)/2)) +
+                        (yAdj/((Properties.HEIGHT - 2*Properties.BORDER_WIDTH)/2))*(yAdj/((Properties.HEIGHT - 2*Properties.BORDER_WIDTH)/2)) > 1) {
                     angle = getAngle(xAdj, yAdj);
                 }
             }
             else {
-                if(x < Properties.BORDER || x > decWidth || y < Properties.BORDER || y > decHeight) {
+                if(x < Properties.BORDER_WIDTH || x > (Properties.WIDTH - Properties.BORDER_WIDTH) ||
+                        y < Properties.BORDER_WIDTH || y > (Properties.HEIGHT - Properties.BORDER_WIDTH)) {
                     angle = getAngle(xAdj, yAdj);
                 }
             }
@@ -84,9 +83,8 @@ public class AntCalc extends Thread {
             ant.setAngle(angle);
 
             if(x >= 0 && x < Properties.WIDTH && y >= 0 && y < Properties.HEIGHT) {
-                pheromones[(int) x][(int) y] += Properties.PHEROMONE_STRENGTH;
-                if (pheromones[(int) x][(int) y] > 1)
-                    pheromones[(int) x][(int) y] = 1;
+                if (pheromones[(int) x][(int) y] + Properties.PHEROMONE_STRENGTH <= 1)
+                    pheromones[(int) x][(int) y] += Properties.PHEROMONE_STRENGTH;
             }
             else {
                 System.err.println("Pheromone Out Of Bounds Error");

@@ -9,22 +9,38 @@ public class Environment extends JPanel {
     private ArrayList<Ant> ants;
     private double[][] pheromones;
 
+    private int redPhero;
+    private int greenPhero;
+    private int bluePhero;
+
     public Environment(ArrayList<Ant> antsIn, double[][] pheromonesIn) {
         ants = antsIn;
         pheromones = pheromonesIn;
+
+        redPhero = Properties.PHEROMONE_COLOR.getRed();
+        greenPhero = Properties.PHEROMONE_COLOR.getGreen();
+        bluePhero = Properties.PHEROMONE_COLOR.getBlue();
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.setColor(Color.BLACK);
+        g.setColor(Properties.BORDER_COLOR);
         g.fillRect(0, 0, getWidth(), getHeight());
+
+        if(Properties.OVAL) {
+            g.setColor(Properties.BACKGROUND_COLOR);
+            g.fillOval(Properties.BORDER_WIDTH, Properties.BORDER_WIDTH, Properties.WIDTH - 2*Properties.BORDER_WIDTH, Properties.HEIGHT - 2*Properties.BORDER_WIDTH);
+        }
+        else {
+            g.setColor(Properties.BACKGROUND_COLOR);
+            g.fillRect(Properties.BORDER_WIDTH, Properties.BORDER_WIDTH, Properties.WIDTH - 2*Properties.BORDER_WIDTH, Properties.HEIGHT - 2*Properties.BORDER_WIDTH);        }
 
         if(Properties.DRAW_PHEROMONES) {
             for (int i = 0; i < pheromones.length; i++) {
                 for (int j = 0; j < pheromones[i].length; j++) {
                     if (pheromones[i][j] > 0) {
-                        g.setColor(new Color(0, 255, 255, (int) (250 * pheromones[i][j])));
+                        g.setColor(new Color(redPhero, bluePhero, greenPhero, (int) (255 * pheromones[i][j])));
                         drawPixel(g, i, j);
                     }
                 }
@@ -32,14 +48,15 @@ public class Environment extends JPanel {
         }
 
         if(Properties.DRAW_ANT || Properties.DRAW_VISION) {
-            g.setColor(Color.BLUE);
             for (int i = 0; i < ants.size(); i++) {
                 Ant ant = ants.get(i);
 
                 if(Properties.DRAW_ANT) {
+                    g.setColor(Properties.ANT_COLOR);
                     drawAnt(g, (int) ant.getX(), (int) ant.getY(), ant.getAngle());
                 }
                 if(Properties.DRAW_VISION) {
+                    g.setColor(Properties.VISION_COLOR);
                     drawVision(g, (int) ant.getX(), (int) ant.getY(), ant.getAngle());
                 }
             }

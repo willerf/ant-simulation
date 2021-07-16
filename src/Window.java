@@ -8,7 +8,7 @@ public class Window extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(Properties.WIDTH + 56, Properties.HEIGHT + 79);
         setTitle("Ant Simulation");
-        getRootPane().setBorder(BorderFactory.createMatteBorder(20, 20, 20, 20, Color.BLACK));
+        getRootPane().setBorder(BorderFactory.createMatteBorder(20, 20, 20, 20, Properties.BORDER_COLOR));
         setVisible(true);
     }
 }

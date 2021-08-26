@@ -107,7 +107,6 @@ public class AntCalc extends Thread {
                             curPheromone = Math.pow((Properties.VISION_ANGLE - Math.abs(theta)), 3)*foodPheromones[xIndex][yIndex];
                             if(food[xIndex][yIndex])
                                 curPheromone = 4*(Properties.VISION_ANGLE - Math.abs(theta));
-
                         }
 
                     } else {

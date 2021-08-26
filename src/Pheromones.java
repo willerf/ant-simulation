@@ -1,18 +1,22 @@
 
 public class Pheromones extends Thread {
 
-    private double[][] pheromones;
+    private double[][] homePheromones;
+    private double[][] foodPheromones;
 
-    public Pheromones(double[][] pheromonesIn) {
-        pheromones = pheromonesIn;
+    public Pheromones(double[][] homePheromonesIn, double[][] foodPheromonesIn) {
+        homePheromones = homePheromonesIn;
+        foodPheromones = foodPheromonesIn;
     }
 
     public void run() {
         while(true) {
-            for (int i = 0; i < pheromones.length; i++) {
-                for (int j = 0; j < pheromones[i].length; j++) {
-                    if (pheromones[i][j] > 0)
-                        pheromones[i][j] -= Properties.PHEROMONE_DISSIPATION;
+            for (int i = 0; i < Properties.WIDTH; i++) {
+                for (int j = 0; j < Properties.HEIGHT; j++) {
+                    if (homePheromones[i][j] > 0)
+                        homePheromones[i][j] -= Properties.PHEROMONE_DISSIPATION;
+                    if (foodPheromones[i][j] > 0)
+                        foodPheromones[i][j] -= Properties.PHEROMONE_DISSIPATION;
                 }
             }
             try {

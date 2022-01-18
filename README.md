@@ -11,6 +11,22 @@ Video of implosion behavior produced by colony: https://youtu.be/7pEteR24OeY
 
 ## Food Implementation
 
+Below are images from the food implementation aspect of the project. The block of green pixels represents food. The large yellow block of pixels represents an obstacle. The pink circle in the middle represents the ant colony home, and the number ontop of it is the amount of food they have brought back to their colony.
+
+# Key
+
+Ants
+- Light Blue Ant: Ant without food
+- Dark Blue Ant: Ant with food
+- Light Blue Path: Home pheromones
+- Red Path: Food pheromones
+
+Environment
+- Green: Food
+- Yellow: Obstacle
+- Pink: Ant Colony Home
+- Number: Amount of food obtained
+
 # Initial Release
 The ants are all released from the center at once (the ant colony home).
 <img width="1035" alt="Screen Shot 2022-01-18 at 4 34 32 PM" src="https://user-images.githubusercontent.com/73970997/150022578-3b20f299-f8ee-46e0-9207-622c6e43ece0.png">
